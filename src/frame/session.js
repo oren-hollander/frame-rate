@@ -1,5 +1,5 @@
 import { isEmpty } from 'lodash/fp'
-import FrameRateService from './frameRateService'
+import LocalDatabase from './localDatabase'
 
 const ANIMATION_FRAME = 'animation-frame'
 const START_INTERACTION = 'start-interaction'
@@ -18,29 +18,20 @@ const PENDING = 'pending'
 const ACTIVE = 'active'
 const STOPPED = 'stopped'
 
-export const Session = (appId, sessionId) => {
+export const Session = (localDatabase, appId, sessionId) => {
   let startTime 
   let startTick
-  let events = []
   let state = PENDING
   let nextInteractionId = 1
 
-  const frameRateService = FrameRateService()
-
   const tick = timestamp => {
-    events.push(animationFrameEvent(timestamp - startTick))
-    
+    localDatabase.addEvent(appId, sessionId, animationFrameEvent(timestamp - startTick))
     if(events.length > 10000)
       report()
     
     if(state === ACTIVE)
       requestAnimationFrame(tick)
   }
-
-  const report = () => {
-    frameRateService.addEvents(appId, sessionId, events)
-    events = []  
-  } 
 
   const start = () => {
     if(state !== PENDING)
@@ -50,9 +41,8 @@ export const Session = (appId, sessionId) => {
     startTick = performance.now()
     state = ACTIVE
 
-    frameRateService.startSession(appId, sessionId, startTime).then(() => {
-      requestAnimationFrame(tick)      
-    })
+    localDatabase.startSession(appId, sessionId, startTime)
+    requestAnimationFrame(tick)      
   }
 
   const stop = () => {
@@ -61,23 +51,29 @@ export const Session = (appId, sessionId) => {
 
     state = STOPPED
 
-    if(!isEmpty(events)) 
-      report()
-    frameRateService.endSession(appId, sessionId)
+    localDatabase.endSession(appId, sessionId)
   }
 
   const startInteraction = name => {
     interactionId = nextInteractionId
     nextInteractionId++
-    events.push(startInteractionEvent(interactionId, name, performance.now() - startTick))
+    localDatabase.addEvent(startInteractionEvent(interactionId, name, performance.now() - startTick))
     return interactionId
   } 
 
   const endInteraction = interactionId => {
-    events.push(endInteractionEvent(interactionId, performance.now() - startTick))
+    localDatabase.addEvent(endInteractionEvent(interactionId, performance.now() - startTick))
   } 
 
-  const setContextParam = (param, value) => events.push(setContextParamEvent(param, value, performance.now() - startTick))
+  const setContextParam = (param, value) => {
+    localDatabase.addEvent(setContextParamEvent(param, value, performance.now() - startTick))
+  } 
 
-  return { start, stop, startInteraction, endInteraction, setContextParam }
+  return { 
+    start, 
+    stop, 
+    startInteraction, 
+    endInteraction, 
+    setContextParam 
+  }
 }

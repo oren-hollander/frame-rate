@@ -1,7 +1,7 @@
 import React from 'react'
 import { filter, flow, last } from 'lodash/fp'
 
-import { isAnimationFrameEvent, isAfter } from './frameRateSession'
+import { isAnimationFrameEvent, isAfter } from './session'
 
 const getLastSecond = ({measurements}) => {
   const lastSecond = flow(

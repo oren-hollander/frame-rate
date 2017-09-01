@@ -1,6 +1,6 @@
 import { get, set, concat, filter, keys, map, assign, pick, find } from 'lodash/fp'
 
-const FrameRateService = () => {
+const LocalDatabase = () => {
   const db = []
 
   const startSession = (appId, sessionId, startTime) => {
@@ -13,23 +13,23 @@ const FrameRateService = () => {
     record.done = true
   }
 
-  const addEvents = (appId, sessionId, events) => {
-    find({appId, sessionId}, db).events.push(...events)
+  const addEvent = (appId, sessionId, event) => {
+    find({appId, sessionId}, db).events.push(event)
   }
 
-  const getSession = async (appId, sessionId) => find({appId, sessionId}, db)
+  const getSession = (appId, sessionId) => find({appId, sessionId}, db)
 
-  const queryInteractions = async (appId, name) => {
+  const queryInteractions = (appId, name) => {
   }
 
   return {
     startSession,
     endSession,
-    addEvents,
+    addEvent,
     endSession,
     getSession,
     queryInteractions
   }
 }
 
-export default FrameRateService
+export default LocalDatabase
