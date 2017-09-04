@@ -1,19 +1,20 @@
 import { get, set, concat, filter, keys, map, assign, pick, find } from 'lodash/fp'
+import { NewSession, Session} from './session'
 
 const LocalDatabase = () => {
   const db = []
 
   const startSession = (appId, sessionId, startTime) => {
-    const record = {appId, sessionId, startTime, events: [], done: false}
-    db.push(record)
+    db.push(NewSession(appId, sessionId, startTime))
   }
 
   const endSession = (appId, sessionId) => {
-    const record = find({appId, sessionId} , db)
-    record.done = true
+    const session = find({appId, sessionId} , db)
+    session.done = true
   }
 
   const addEvent = (appId, sessionId, event) => {
+    console.log(appId, sessionId, event)
     find({appId, sessionId}, db).events.push(event)
   }
 
