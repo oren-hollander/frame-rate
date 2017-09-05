@@ -3,8 +3,7 @@ import LocalDatabase from './localDatabase'
 import TestClock from './testClock'
 import { Session, NewSession } from './Session'
 
-
-describe('Session', () => {
+describe.skip('Session', () => {
   
   const appId = 'app'
   const sessionId = 'session'

@@ -14,7 +14,6 @@ const LocalDatabase = () => {
   }
 
   const addEvent = (appId, sessionId, event) => {
-    console.log(appId, sessionId, event)
     find({appId, sessionId}, db).events.push(event)
   }
 
