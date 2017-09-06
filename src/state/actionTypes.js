@@ -1,0 +1,5 @@
+export const ANIMATION_FRAME = 'animation-frame'
+export const START_INTERACTION = 'start-interaction'
+export const END_INTERACTION = 'end-interaction'
+export const SET_PARAMETER = 'set-parameter'
+export const DELETE_PARAMETER = 'delete-parameter'
